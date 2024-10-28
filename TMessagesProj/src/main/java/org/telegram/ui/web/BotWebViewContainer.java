@@ -64,6 +64,8 @@ import androidx.core.content.FileProvider;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.util.Consumer;
 
+import org.telegram.mod.browser.TeleModWebView;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -130,7 +132,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.IDN;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -337,7 +338,7 @@ public abstract class BotWebViewContainer extends FrameLayout implements Notific
         if (replaceWith != null) {
             AndroidUtilities.removeFromParent(replaceWith);
         }
-        webView = replaceWith == null ? new MyWebView(getContext(), bot) : replaceWith;
+        webView = replaceWith == null ? new MyWebView(getContext(), bot, botUser) : replaceWith;
         if (!bot) {
             CookieManager cookieManager = CookieManager.getInstance();
             cookieManager.setAcceptCookie(true);
@@ -2663,7 +2664,7 @@ public abstract class BotWebViewContainer extends FrameLayout implements Notific
         }
     }
 
-    public static class MyWebView extends WebView {
+    public static class MyWebView extends TeleModWebView {
         private final int tag = tags++;
         private boolean isPageLoaded;
         private Runnable whenPageLoaded;
@@ -2704,11 +2705,10 @@ public abstract class BotWebViewContainer extends FrameLayout implements Notific
             FileLog.d("[webview] #" + tag + " " + s);
         }
 
-        public MyWebView(Context context, boolean bot) {
-            super(context);
+        public MyWebView(Context context, boolean bot, TLRPC.User botUser) {
+            super(context,botUser);
             this.bot = bot;
             d("created new webview " + this);
-
             setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {

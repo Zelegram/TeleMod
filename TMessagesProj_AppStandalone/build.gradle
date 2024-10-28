@@ -19,7 +19,7 @@ dependencies {
     implementation 'androidx.fragment:fragment:1.2.0'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'androidx.core:core:1.10.1'
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.2'
     implementation files('../TMessagesProj/libs/libgsaverification-client.aar')
 }
 
@@ -42,8 +42,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
 
         coreLibraryDesugaringEnabled true
     }
@@ -61,6 +61,15 @@ android {
             storePassword RELEASE_STORE_PASSWORD
             keyAlias RELEASE_KEY_ALIAS
             keyPassword RELEASE_KEY_PASSWORD
+        }
+    }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+            universalApk true
         }
     }
 
@@ -114,7 +123,19 @@ android {
 
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
-            outputFileName = "app.apk"
+            // Retrieve variant details
+            def applicationId = variant.applicationId
+            def versionName = variant.versionName
+            def versionCode = variant.versionCode
+            def flavorName = variant.flavorName
+            def buildType = variant.buildType.name
+            def variantName = variant.name
+
+            // Get the ABI filter, default to "universal" if not found
+            def abi = output.getFilters().find { it.filterType == 'ABI' }?.identifier ?: "universal"
+
+            outputFileName = "${buildType}-v${versionName}-${abi}.apk"
+
             output.versionCodeOverride = defaultConfig.versionCode * 10 + variant.productFlavors.get(0).abiVersionCode
         }
     }
@@ -127,7 +148,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 19
+        minSdkVersion MIN_SDK_VERSION
         targetSdkVersion 34
         versionName APP_VERSION_NAME
         ndkVersion "21.4.7075529"

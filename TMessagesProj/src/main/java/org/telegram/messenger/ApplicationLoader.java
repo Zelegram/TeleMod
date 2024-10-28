@@ -36,6 +36,7 @@ import androidx.multidex.MultiDex;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import org.telegram.mod.TeleModApplication;
 
 import org.json.JSONObject;
 import org.telegram.messenger.voip.VideoCapturerDevice;
@@ -52,7 +53,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class ApplicationLoader extends Application {
+public class ApplicationLoader extends TeleModApplication {
 
     public static ApplicationLoader applicationLoaderInstance;
 

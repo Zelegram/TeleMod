@@ -127,6 +127,8 @@ import org.telegram.messenger.UserObject;
 import org.telegram.messenger.Utilities;
 import org.telegram.messenger.XiaomiUtilities;
 import org.telegram.messenger.browser.Browser;
+import org.telegram.mod.TeleModActivity;
+import org.telegram.mod.TeleModConst;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.SerializedData;
 import org.telegram.tgnet.TLObject;
@@ -3071,6 +3073,11 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             updatePasscodeButton();
             updateProxyButton(false, false);
         }
+
+        menu.addItem(100,R.drawable.filled_giveaway_premium).setOnClickListener(v -> {
+            presentFragment(new TeleModActivity());
+        });
+
         searchItem = menu.addItem(0, R.drawable.ic_ab_search).setIsSearchField(true, false).setActionBarMenuItemSearchListener(new ActionBarMenuItem.ActionBarMenuItemSearchListener() {
             boolean isSpeedItemCreated = false;
 
@@ -7228,6 +7235,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             storyHint.show();
         }
         AndroidUtilities.runOnUIThread(this::createSearchViewPager, 200);
+        TeleModConst.INSTANCE.showNotice(getContext());
     }
 
     private void showArchiveHelp() {

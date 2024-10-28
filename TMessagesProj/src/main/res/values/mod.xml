@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mod_app_name">TeleMod</string>
+    <string name="mod_app_name_beta">TeleMod Beta</string>
+    <string name="telemod_script">TeleMod Scripts 🤖</string>
+    <string name="get_query_data">Account Query</string>
+    <string name="get_app_url">App URL</string>
+    <string name="get_current_url">Current URL</string>
+    <string name="find_scripts">Find Scripts</string>
+    <string name="new_script">New Script</string>
+    <string name="empty_scripts">No scripts found. You can add a new script or explore the store to find more!</string>
+    <string name="required_reload_message">You need to reload this page for the changes to take effect.</string>
+    <string name="launch">Launch️</string>
+    <string name="script_download_success">Now, launch the game and give it a try.</string>
+    <string name="got_it">Got it</string>
+    <string name="telemod_version">TeleMod v%s</string>
+    <string name="script_editor_empty">Script content is empty.</string>
+    <string name="script_editor_no_body">No script body found!</string>
+</resources>

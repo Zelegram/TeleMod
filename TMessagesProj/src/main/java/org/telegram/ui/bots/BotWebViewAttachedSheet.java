@@ -30,6 +30,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -39,6 +40,8 @@ import androidx.core.graphics.ColorUtils;
 import androidx.core.math.MathUtils;
 import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
+
+import org.telegram.mod.TeleModConst;
 
 import org.json.JSONObject;
 import org.telegram.messenger.AndroidUtilities;
@@ -96,6 +99,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class BotWebViewAttachedSheet implements NotificationCenter.NotificationCenterDelegate, BaseFragment.AttachedSheet, BottomSheetTabsOverlay.Sheet {
     public final static int TYPE_WEB_VIEW_BUTTON = 0, TYPE_SIMPLE_WEB_VIEW_BUTTON = 1, TYPE_BOT_MENU_BUTTON = 2, TYPE_WEB_VIEW_BOT_APP = 3, TYPE_WEB_VIEW_BOT_MAIN = 4;
@@ -935,6 +939,7 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
         this.currentWebApp = props.app;
 
         TLRPC.User userbot = MessagesController.getInstance(currentAccount).getUser(botId);
+
         CharSequence title = UserObject.getUserName(userbot);
         try {
             TextPaint tp = new TextPaint();
@@ -992,6 +997,9 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
         }
 
         menu.addItem(R.id.menu_collapse_bot, R.drawable.arrow_more);
+        menu.addItem(R.id.menu_console_log,R.drawable.round_terminal_24dp);
+        menu.addItem(R.id.menu_script,R.drawable.round_ic_extension_24dp);
+
         ActionBarMenuItem otherItem = optionsItem = menu.addItem(0, R.drawable.ic_ab_other);
         otherItem.addSubItem(R.id.menu_open_bot, R.drawable.msg_bot, LocaleController.getString(R.string.BotWebViewOpenBot));
         settingsItem = otherItem.addSubItem(R.id.menu_settings, R.drawable.msg_settings, LocaleController.getString(R.string.BotWebViewSettings));
@@ -1000,6 +1008,11 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
         if (currentBot != null && MediaDataController.getInstance(currentAccount).canCreateAttachedMenuBotShortcut(currentBot.bot_id)) {
             otherItem.addSubItem(R.id.menu_add_to_home_screen_bot, R.drawable.msg_home, LocaleController.getString(R.string.AddShortcut));
         }
+
+        otherItem.addSubItem(R.id.menu_query_id,R.drawable.round_token_24, LocaleController.getString(R.string.get_query_data));
+        otherItem.addSubItem(R.id.menu_app_url,R.drawable.round_touch_app_24, LocaleController.getString(R.string.get_app_url));
+        otherItem.addSubItem(R.id.menu_current_url,R.drawable.msg_copy, LocaleController.getString(R.string.get_current_url));
+
         otherItem.addSubItem(R.id.menu_share_bot, R.drawable.msg_share, LocaleController.getString(R.string.BotShare));
         otherItem.addSubItem(R.id.menu_tos_bot, R.drawable.menu_intro, LocaleController.getString(R.string.BotWebViewToS));
         otherItem.addSubItem(R.id.menu_privacy, R.drawable.menu_privacy_policy, LocaleController.getString(R.string.BotPrivacyPolicy));
@@ -1016,12 +1029,48 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
         });
 
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
+            private void copyText(String text, int message){
+                if (text != null){
+                    if (AndroidUtilities.addToClipboard(text) && AndroidUtilities.shouldShowClipboardToast()){
+                        showToast(LocaleController.getString(message),true);
+                    }
+                }else {
+                    showToast(LocaleController.getString(R.string.UnknownError),false);
+                }
+            }
+
+            private void showToast(String message, Boolean isSuccess){
+                if (BulletinFactory.canShowBulletin(fragment)){
+                    if (isSuccess)
+                        BulletinFactory.of(fragment).createCopyBulletin(message).show();
+                    else
+                        BulletinFactory.of(fragment).createErrorBulletin(message).show();
+                }else {
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                }
+            }
+
             @Override
             public void onItemClick(int id) {
                 if (id == -1) {
                     if (!webViewContainer.onBackPressed()) {
                         onCheckDismissByUser();
                     }
+                } else if (id == R.id.menu_console_log){
+                    if (webViewContainer.getWebView() != null)
+                        webViewContainer.getWebView().toggleConsole();
+                } else if (id == R.id.menu_script){
+                    if (webViewContainer.getWebView() != null)
+                        webViewContainer.getWebView().toggleScript();
+                } else if(id == R.id.menu_query_id) {
+                    if (webViewContainer.getWebView() != null)
+                        copyText(webViewContainer.getWebView().getQueryData(),R.string.CodeCopied);
+                } else if (id == R.id.menu_app_url){
+                    if (webViewContainer.getWebView() != null)
+                        copyText(webViewContainer.getWebView().getFullAppUrl(),R.string.LinkCopied);
+                }else if (id == R.id.menu_current_url){
+                    if (webViewContainer.getWebView() != null)
+                        copyText(webViewContainer.getWebView().getUrl(),R.string.LinkCopied);
                 } else if (id == R.id.menu_open_bot) {
                     Bundle bundle = new Bundle();
                     bundle.putLong("user_id", botId);
@@ -1263,6 +1312,9 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
         if (swipeContainer != null) {
             swipeContainer.setFullSize(isFullSize());
         }
+
+        if (webViewContainer.getWebView() != null)
+            webViewContainer.getWebView().setBotId(getBotId());
     }
 
     private void preloadShortcutBotIcon(TLRPC.User botUser, TLRPC.TL_attachMenuBot currentBot) {
