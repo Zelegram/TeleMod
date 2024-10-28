@@ -13,7 +13,7 @@
 
 ### Installation
 
-Download the latest TeleMod APK from the [releases page](releases). Three build types are available:
+Download the latest TeleMod APK from the [releases page](https://github.com/Zelegram/TeleMod/releases). Three build types are available:
 
 - **Standalone**: Functions like the Telegram version from its [official website](https://telegram.org/android?setln=en). The package name is `org.telegram.messenger.web`. *(Recommended)*
 - **Release**: Similar to the [Play Store](https://play.google.com/store/apps/details?id=org.telegram.messenger&hl=en&gl=US) version, with the package name `org.telegram.messenger`.
@@ -86,4 +86,4 @@ Our goal is to build a specialized Telegram app for Crypto airdrop hunters and t
 - You will require [Android Studio](https://developer.android.com/studio) 3.4, Android NDK rev. 20 and Android SDK 8.1
 - Basic knowledge of Android development, Java, and Kotlin
 
-> The official Telegram source code is primarily in Java, but all modifications in TeleMod are implemented in Kotlin. These modifications are located in the `[org/telegram/mod](TMessagesProj/src/main/java/org/telegram/mod)` directory within the `TMessagesProj` module.
+> The official Telegram source code is primarily in Java, but all modifications in TeleMod are implemented in Kotlin. These modifications are located in the [org/telegram/mod](https://github.com/Zelegram/TeleMod/tree/master/TMessagesProj/src/main/java/org/telegram/mod) directory within the `TMessagesProj` module.
